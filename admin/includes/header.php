@@ -1,7 +1,8 @@
 <?php
-include_once 'includes/connection.php'
-?>
+include 'includes/connection.php';
+include 'includes/functions.php';
 
+?>
 <!DOCTYPE html>
 <html lang="en">
 
