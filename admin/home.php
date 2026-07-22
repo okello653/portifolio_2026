@@ -1,5 +1,38 @@
 <?php 
 include_once 'includes/header.php';
+
+if(isset($_POST['submit'])) {
+  // echo "<script>alert('Button is clicked')</script>";
+  $title = $_POST['title'];
+  $desc = $_POST['shortDesc'];
+
+  if(!empty($_FILES['image'])) {
+    $image_url = share_file("image","uploads/");
+  }
+
+  $query = "INSERT into home_set (title, description, image) values (?,?,?)";
+  $stmt = $conn->prepare($query);
+  if($stmt) {
+    $stmt->bind_param("sss", $title, $desc, $image_url);
+    if($stmt->execute()) {
+      echo "<script>alert('Settings uploaded successfully')</script>";
+    } else {
+      echo "<script>alert('Settings upload failed ')</script>";
+    }
+  }
+}
+
+// fetching the about record from the database
+$query = "SELECT * from home_set where id =?";
+$id=1;
+$stmt = $conn->prepare($query);
+if($stmt) {
+  $stmt->bind_param("i", $id);
+  $stmt->execute();
+  $results = $stmt->get_result();
+  $home = $results->fetch_assoc();
+  // var_dump($about);
+}
 ?>
 
       <!-- Main Content -->
@@ -18,7 +51,7 @@ include_once 'includes/header.php';
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>About Title</label>
-                                    <input type="text" name="title" class="form-control" required="">
+                                    <input type="text" name="title" class="form-control" required="" value="<?=$home['title']?>">
                                     <div class="invalid-feedback">
                                     Enter the title
                                     </div>
@@ -26,15 +59,16 @@ include_once 'includes/header.php';
                             </div>
                             <div class="form-group mb-0 col-md-6">
                               <label>Portifolio Image</label>
-                              <input type="file" class="form-control" name="smallImage">
+                              <input type="file" class="form-control" name="image">
                               <div class="invalid-feedback">
                                 Upload the image
                               </div>
+                              <img src="<?=$home['image']?>" alt="" class="img-fluid" width="50px">
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group mb-0">
                                     <label>Short Description</label>
-                                    <textarea class="form-control" required="" name="shortDesc"></textarea>
+                                    <textarea class="form-control" required="" name="shortDesc"><?=$home['description']?></textarea>
                                     <div class="invalid-feedback">
                                     Enter short description
                                 </div>
